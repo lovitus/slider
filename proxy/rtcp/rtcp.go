@@ -70,7 +70,7 @@ func (s *RTCP) ListenAndServe() {
 	}
 
 	backoff := time.Second
-	maxBackoff := 60 * time.Second
+	maxBackoff := 10 * time.Second
 
 	for {
 		ln, err := rl.Listen("tcp", s.raddr)
@@ -87,16 +87,23 @@ func (s *RTCP) ListenAndServe() {
 		}
 
 		log.F("[rtcp] remote listening on %s, forwarding to local %s", s.raddr, s.laddr)
-		backoff = time.Second // reset on success
 
 		for {
 			rc, err := ln.Accept()
 			if err != nil {
-				log.F("[rtcp] accept error on remote %s: %v, re-establishing listener...", s.raddr, err)
 				ln.Close()
-				break // break inner loop, retry Listen in outer loop
+				log.F("[rtcp] %s: bind failed, retry in %v", s.raddr, backoff)
+				time.Sleep(backoff)
+				if backoff < maxBackoff {
+					backoff *= 2
+					if backoff > maxBackoff {
+						backoff = maxBackoff
+					}
+				}
+				break // re-establish listener via outer loop
 			}
 
+			backoff = time.Second // reset only on successful connection
 			go s.Serve(rc)
 		}
 	}

@@ -326,9 +326,11 @@ func (l *socks5Listener) Accept() (net.Conn, error) {
 	default:
 	}
 
-	// Retry BIND with short delays to handle port TIME_WAIT from previous connection
-	maxRetries := 10
-	for attempt := 0; attempt < maxRetries; attempt++ {
+	// Try BIND up to 2 times with a short delay (for port TIME_WAIT).
+	// If both fail, return error — the outer rtcp loop handles longer backoff.
+	const fastRetries = 2
+	var lastErr error
+	for attempt := 0; attempt < fastRetries; attempt++ {
 		select {
 		case <-l.done:
 			return nil, errors.New("listener closed")
@@ -337,18 +339,15 @@ func (l *socks5Listener) Accept() (net.Conn, error) {
 
 		conn, err := l.tryBind()
 		if err != nil {
-			// If it looks like a transient "address in use" error, retry
-			if attempt < maxRetries-1 {
-				log.F("[socks5] BIND attempt %d/%d for port %d failed: %v, retrying...",
-					attempt+1, maxRetries, l.bindPort, err)
+			lastErr = err
+			if attempt < fastRetries-1 {
 				time.Sleep(500 * time.Millisecond)
-				continue
 			}
-			return nil, err
+			continue
 		}
 		return conn, nil
 	}
-	return nil, fmt.Errorf("[socks5] BIND failed after %d attempts", maxRetries)
+	return nil, lastErr
 }
 
 // tryBind performs a single BIND attempt: connect, auth, bind, wait for connection.

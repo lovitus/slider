@@ -1,6 +1,6 @@
 # Cross-compile slider for multiple platforms
 $ErrorActionPreference = "Continue"
-$version = "0.1.2"
+$version = "0.1.3"
 $outDir = "dist"
 $binName = "slider"
 $ldflags = "-s -w -X main.version=$version"
