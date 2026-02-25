@@ -1,6 +1,7 @@
 package rule
 
 import (
+	"fmt"
 	"net"
 	"net/url"
 	"strconv"
@@ -187,6 +188,14 @@ func (f *Forwarder) MaxFailures() uint32 {
 // SetMaxFailures sets the maxFailures of forwarder.
 func (f *Forwarder) SetMaxFailures(l uint32) {
 	atomic.StoreUint32(&f.maxFailures, l)
+}
+
+// Listen delegates to the inner dialer if it implements proxy.RemoteListener.
+func (f *Forwarder) Listen(network, addr string) (net.Listener, error) {
+	if rl, ok := f.Dialer.(proxy.RemoteListener); ok {
+		return rl.Listen(network, addr)
+	}
+	return nil, fmt.Errorf("forwarder %s does not support remote listening", f.addr)
 }
 
 // Latency returns the latency of forwarder.

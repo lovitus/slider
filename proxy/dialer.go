@@ -34,6 +34,13 @@ type UDPDialer interface {
 	DialUDP(network, addr string) (pc net.PacketConn, writeTo net.Addr, err error)
 }
 
+// RemoteListener is implemented by dialers that support listening on the remote end
+// of the proxy chain (e.g. SSH remote port forwarding). Used by rtcp scheme.
+type RemoteListener interface {
+	// Listen requests the remote end to listen on the given address.
+	Listen(network, addr string) (net.Listener, error)
+}
+
 // DialerCreator is a function to create dialers.
 type DialerCreator func(s string, dialer Dialer) (Dialer, error)
 

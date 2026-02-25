@@ -131,7 +131,7 @@ func usage() {
 	fmt.Fprintf(w, "\n")
 
 	fmt.Fprintf(w, "Available schemes:\n")
-	fmt.Fprintf(w, "  listen: mixed ss socks5 http vless trojan trojanc redir redir6 tcp udp tls ws unix kcp\n")
+	fmt.Fprintf(w, "  listen: mixed ss socks5 http vless trojan trojanc redir redir6 tcp ltcp rtcp udp tls ws unix kcp\n")
 	fmt.Fprintf(w, "  forward: reject ss socks4 socks5 http ssr ssh vless vmess trojan trojanc tcp udp tls ws unix kcp simple-obfs\n")
 	fmt.Fprintf(w, "\n")
 
@@ -319,6 +319,14 @@ func usage() {
 	fmt.Fprintf(w, "\n")
 	fmt.Fprintf(w, "  "+app+" -listen socks5://:1080 -listen http://:8080 -forward ss://method:pass@1.1.1.1:8443\n")
 	fmt.Fprintf(w, "    -listen on :1080 as socks5 server, :8080 as http proxy server, forward all requests via remote ss server.\n")
+	fmt.Fprintf(w, "\n")
+	fmt.Fprintf(w, "  "+app+" -listen ltcp://:8080/internal:80 -forward ssh://user@server:22\n")
+	fmt.Fprintf(w, "    -local TCP forwarding: listen on :8080, forward to internal:80 via SSH tunnel.\n")
+	fmt.Fprintf(w, "\n")
+	fmt.Fprintf(w, "  "+app+" -listen rtcp://:9090/127.0.0.1:3000 -forward ssh://user@server:22\n")
+	fmt.Fprintf(w, "    -remote TCP forwarding: ask SSH server to listen on :9090, forward to local :3000.\n")
+	fmt.Fprintf(w, "    NOTE: rtcp requires the last hop to support remote listening (ssh, socks5).\n")
+	fmt.Fprintf(w, "    Protocols like ss, vmess, trojan, http do NOT support remote listening.\n")
 	fmt.Fprintf(w, "\n")
 	fmt.Fprintf(w, "  "+app+" -verbose -listen -dns=:53 -dnsserver=8.8.8.8:53 -forward ss://method:pass@server:port -dnsrecord=www.example.com/1.2.3.4\n")
 	fmt.Fprintf(w, "    -listen on :53 as dns server, forward to 8.8.8.8:53 via ss server.\n")
