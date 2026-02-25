@@ -22,7 +22,6 @@
 /dev/
 dev*.go
 
-
 dist
 
 *.zip
@@ -35,3 +34,4 @@ config/rules.d/*.list
 glider
 /bak/
 /rules.d/
+task history with old ai.md

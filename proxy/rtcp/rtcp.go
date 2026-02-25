@@ -7,8 +7,8 @@
 // Asks the last hop in the proxy chain to listen on REMOTE_PORT, and forwards
 // each incoming remote connection to LOCAL_HOST:LOCAL_PORT locally.
 //
-// The last hop in the forward chain MUST support remote listening (e.g. ssh).
-// Protocols like ss, vmess, http proxy do NOT support this — an error is shown.
+// The last hop in the forward chain MUST support remote listening (e.g. ssh, socks5 with BIND).
+// Protocols like ss, vmess, trojan, http proxy do NOT support this — an error is shown.
 package rtcp
 
 import (
@@ -16,6 +16,7 @@ import (
 	"net"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/nadoo/glider/log"
 	"github.com/nadoo/glider/proxy"
@@ -55,35 +56,49 @@ func NewRTCPServer(s string, p proxy.Proxy) (proxy.Server, error) {
 }
 
 // ListenAndServe asks the remote end to listen, then relays connections locally.
+// Includes retry with exponential backoff for resilience.
 func (s *RTCP) ListenAndServe() {
 	// Get the next dialer and check if it supports remote listening
 	dialer := s.proxy.NextDialer("")
 	rl, ok := dialer.(proxy.RemoteListener)
 	if !ok {
 		log.F("[rtcp] ERROR: the last hop (%s) does not support remote listening.\n"+
-			"       The last hop must be ssh, socks5, or another protocol that supports listening.\n"+
+			"       The last hop must be ssh, socks5 (with BIND support), or another protocol that supports listening.\n"+
 			"       Protocols like ss, vmess, trojan, http do NOT support remote listening.",
 			dialer.Addr())
 		return
 	}
 
-	ln, err := rl.Listen("tcp", s.raddr)
-	if err != nil {
-		log.F("[rtcp] failed to listen on remote %s: %v", s.raddr, err)
-		return
-	}
-	defer ln.Close()
-
-	log.F("[rtcp] remote listening on %s, forwarding to local %s", s.raddr, s.laddr)
+	backoff := time.Second
+	maxBackoff := 60 * time.Second
 
 	for {
-		rc, err := ln.Accept()
+		ln, err := rl.Listen("tcp", s.raddr)
 		if err != nil {
-			log.F("[rtcp] accept error on remote %s: %v", s.raddr, err)
-			return
+			log.F("[rtcp] failed to listen on remote %s: %v (retry in %v)", s.raddr, err, backoff)
+			time.Sleep(backoff)
+			if backoff < maxBackoff {
+				backoff *= 2
+				if backoff > maxBackoff {
+					backoff = maxBackoff
+				}
+			}
+			continue
 		}
 
-		go s.Serve(rc)
+		log.F("[rtcp] remote listening on %s, forwarding to local %s", s.raddr, s.laddr)
+		backoff = time.Second // reset on success
+
+		for {
+			rc, err := ln.Accept()
+			if err != nil {
+				log.F("[rtcp] accept error on remote %s: %v, re-establishing listener...", s.raddr, err)
+				ln.Close()
+				break // break inner loop, retry Listen in outer loop
+			}
+
+			go s.Serve(rc)
+		}
 	}
 }
 

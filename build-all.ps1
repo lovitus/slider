@@ -1,5 +1,5 @@
 # Cross-compile slider for multiple platforms
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Continue"
 $version = "0.1.0"
 $outDir = "dist"
 $binName = "slider"
