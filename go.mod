@@ -1,6 +1,6 @@
 module github.com/nadoo/glider
 
-go 1.21
+go 1.24.0
 
 require (
 	github.com/aead/chacha20 v0.0.0-20180709150244-8b13a72661da
@@ -11,7 +11,7 @@ require (
 	github.com/nadoo/conflag v0.2.3
 	github.com/nadoo/ipset v0.3.0
 	github.com/xtaci/kcp-go/v5 v5.6.1
-	golang.org/x/crypto v0.0.0-20201203163018-be400aefbc4c
+	golang.org/x/crypto v0.48.0
 )
 
 require (
@@ -27,8 +27,8 @@ require (
 	github.com/tjfoc/gmsm v1.3.2 // indirect
 	github.com/u-root/u-root v7.0.0+incompatible // indirect
 	golang.org/x/mod v0.4.0 // indirect
-	golang.org/x/net v0.0.0-20201202161906-c7110b5ffcbb // indirect
-	golang.org/x/sys v0.0.0-20201202213521-69691e467435 // indirect
+	golang.org/x/net v0.50.0 // indirect
+	golang.org/x/sys v0.41.0 // indirect
 	golang.org/x/tools v0.0.0-20201204062850-545788942d5f // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 )
