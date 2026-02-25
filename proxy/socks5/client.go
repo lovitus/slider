@@ -7,6 +7,7 @@ import (
 	"net"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/nadoo/glider/log"
 	"github.com/nadoo/glider/pool"
@@ -282,6 +283,8 @@ func (s *Socks5) authenticate(conn net.Conn) error {
 // Listen implements proxy.RemoteListener using SOCKS5 BIND (CMD=0x02).
 // Each Accept() issues a new BIND request since SOCKS5 BIND only handles
 // one inbound connection per request (RFC 1928).
+// No probe is done here to avoid occupying the port — validation happens
+// on the first Accept() call.
 func (s *Socks5) Listen(network, addr string) (net.Listener, error) {
 	// Validate addr format
 	host, portStr, err := net.SplitHostPort(addr)
@@ -293,42 +296,15 @@ func (s *Socks5) Listen(network, addr string) (net.Listener, error) {
 		return nil, fmt.Errorf("[socks5] invalid port in bind address: %s", portStr)
 	}
 
-	// Do a probe BIND to verify the server supports it
-	probeConn, err := s.dialer.Dial("tcp", s.addr)
-	if err != nil {
-		return nil, fmt.Errorf("[socks5] dial to %s for bind probe: %w", s.addr, err)
-	}
-
-	if err := s.authenticate(probeConn); err != nil {
-		probeConn.Close()
-		return nil, fmt.Errorf("[socks5] auth for bind probe: %w", err)
-	}
-
-	// Send BIND command
-	bindAddr := buildBindRequest(host, port)
-	if _, err := probeConn.Write(bindAddr); err != nil {
-		probeConn.Close()
-		return nil, fmt.Errorf("[socks5] write bind request: %w", err)
-	}
-
-	// Read first reply — bound address
-	boundAddr, err := readBindReply(probeConn)
-	if err != nil {
-		probeConn.Close()
-		return nil, fmt.Errorf("[socks5] bind not supported by server %s: %w", s.addr, err)
-	}
-
-	log.F("[socks5] BIND probe succeeded, server bound on %s", boundAddr)
-	probeConn.Close() // close probe, we'll open fresh connections per Accept()
-
 	ln := &socks5Listener{
 		socks:    s,
 		bindHost: host,
 		bindPort: port,
-		addr:     boundAddr,
+		addr:     &simpleAddr{network: "tcp", addr: addr},
 		done:     make(chan struct{}),
 	}
 
+	log.F("[socks5] BIND listener created for %s via %s", addr, s.addr)
 	return ln, nil
 }
 
@@ -338,7 +314,7 @@ type socks5Listener struct {
 	socks    *Socks5
 	bindHost string
 	bindPort int
-	addr     net.Addr // bound address from probe
+	addr     net.Addr // requested bind address
 	done     chan struct{}
 	once     sync.Once
 }
@@ -350,6 +326,33 @@ func (l *socks5Listener) Accept() (net.Conn, error) {
 	default:
 	}
 
+	// Retry BIND with short delays to handle port TIME_WAIT from previous connection
+	maxRetries := 10
+	for attempt := 0; attempt < maxRetries; attempt++ {
+		select {
+		case <-l.done:
+			return nil, errors.New("listener closed")
+		default:
+		}
+
+		conn, err := l.tryBind()
+		if err != nil {
+			// If it looks like a transient "address in use" error, retry
+			if attempt < maxRetries-1 {
+				log.F("[socks5] BIND attempt %d/%d for port %d failed: %v, retrying...",
+					attempt+1, maxRetries, l.bindPort, err)
+				time.Sleep(500 * time.Millisecond)
+				continue
+			}
+			return nil, err
+		}
+		return conn, nil
+	}
+	return nil, fmt.Errorf("[socks5] BIND failed after %d attempts", maxRetries)
+}
+
+// tryBind performs a single BIND attempt: connect, auth, bind, wait for connection.
+func (l *socks5Listener) tryBind() (net.Conn, error) {
 	// Dial fresh connection to SOCKS5 server
 	conn, err := l.socks.dialer.Dial("tcp", l.socks.addr)
 	if err != nil {
@@ -369,20 +372,24 @@ func (l *socks5Listener) Accept() (net.Conn, error) {
 		return nil, fmt.Errorf("[socks5] write bind: %w", err)
 	}
 
-	// Read first reply — confirms server is listening
-	_, err = readBindReply(conn)
+	// Read first reply — confirms server has bound the port and is listening
+	boundAddr, err := readBindReply(conn)
 	if err != nil {
 		conn.Close()
-		return nil, fmt.Errorf("[socks5] bind reply 1: %w", err)
+		return nil, fmt.Errorf("[socks5] bind failed: %w", err)
 	}
+
+	log.F("[socks5] BIND on %s, waiting for incoming connection...", boundAddr)
 
 	// Read second reply — an incoming connection has arrived
 	// This blocks until a client connects to the bound port on the SOCKS5 server
-	_, err = readBindReply(conn)
+	clientAddr, err := readBindReply(conn)
 	if err != nil {
 		conn.Close()
-		return nil, fmt.Errorf("[socks5] bind reply 2 (waiting for connection): %w", err)
+		return nil, fmt.Errorf("[socks5] waiting for connection: %w", err)
 	}
+
+	log.F("[socks5] BIND connection from %s", clientAddr)
 
 	// conn is now connected to the incoming client — return it
 	return conn, nil

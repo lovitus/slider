@@ -1,6 +1,6 @@
 # Cross-compile slider for multiple platforms
 $ErrorActionPreference = "Continue"
-$version = "0.1.0"
+$version = "0.1.2"
 $outDir = "dist"
 $binName = "slider"
 $ldflags = "-s -w -X main.version=$version"
@@ -9,23 +9,23 @@ if (Test-Path $outDir) { Remove-Item -Recurse -Force $outDir }
 New-Item -ItemType Directory -Path $outDir | Out-Null
 
 $targets = @(
-    @{ GOOS="linux";   GOARCH="386" },
-    @{ GOOS="linux";   GOARCH="amd64" },
-    @{ GOOS="linux";   GOARCH="arm64" },
-    @{ GOOS="linux";   GOARCH="arm"; GOARM="6" },
-    @{ GOOS="linux";   GOARCH="arm"; GOARM="7" },
-    @{ GOOS="linux";   GOARCH="mips"; GOMIPS="softfloat" },
-    @{ GOOS="linux";   GOARCH="mipsle"; GOMIPS="softfloat" },
-    @{ GOOS="linux";   GOARCH="mips64" },
-    @{ GOOS="linux";   GOARCH="mips64le" },
-    @{ GOOS="linux";   GOARCH="riscv64" },
-    @{ GOOS="darwin";  GOARCH="amd64" },
-    @{ GOOS="darwin";  GOARCH="arm64" },
-    @{ GOOS="freebsd"; GOARCH="386" },
-    @{ GOOS="freebsd"; GOARCH="amd64" },
-    @{ GOOS="windows"; GOARCH="386" },
-    @{ GOOS="windows"; GOARCH="amd64" },
-    @{ GOOS="windows"; GOARCH="arm64" }
+    @{ GOOS = "linux"; GOARCH = "386" },
+    @{ GOOS = "linux"; GOARCH = "amd64" },
+    @{ GOOS = "linux"; GOARCH = "arm64" },
+    @{ GOOS = "linux"; GOARCH = "arm"; GOARM = "6" },
+    @{ GOOS = "linux"; GOARCH = "arm"; GOARM = "7" },
+    @{ GOOS = "linux"; GOARCH = "mips"; GOMIPS = "softfloat" },
+    @{ GOOS = "linux"; GOARCH = "mipsle"; GOMIPS = "softfloat" },
+    @{ GOOS = "linux"; GOARCH = "mips64" },
+    @{ GOOS = "linux"; GOARCH = "mips64le" },
+    @{ GOOS = "linux"; GOARCH = "riscv64" },
+    @{ GOOS = "darwin"; GOARCH = "amd64" },
+    @{ GOOS = "darwin"; GOARCH = "arm64" },
+    @{ GOOS = "freebsd"; GOARCH = "386" },
+    @{ GOOS = "freebsd"; GOARCH = "amd64" },
+    @{ GOOS = "windows"; GOARCH = "386" },
+    @{ GOOS = "windows"; GOARCH = "amd64" },
+    @{ GOOS = "windows"; GOARCH = "arm64" }
 )
 
 $success = 0
@@ -49,7 +49,7 @@ foreach ($t in $targets) {
     $env:GOOS = $t.GOOS
     $env:GOARCH = $t.GOARCH
     $env:CGO_ENABLED = "0"
-    if ($t.GOARM)  { $env:GOARM  = $t.GOARM }  else { Remove-Item Env:\GOARM  -ErrorAction SilentlyContinue }
+    if ($t.GOARM) { $env:GOARM = $t.GOARM }  else { Remove-Item Env:\GOARM  -ErrorAction SilentlyContinue }
     if ($t.GOMIPS) { $env:GOMIPS = $t.GOMIPS } else { Remove-Item Env:\GOMIPS -ErrorAction SilentlyContinue }
 
     go build -ldflags $ldflags -trimpath -o $outPath .
@@ -65,7 +65,8 @@ foreach ($t in $targets) {
         $pkgName = Join-Path $outDir "$binName-$suffix-$version.zip"
         Compress-Archive -Path $outPath -DestinationPath $pkgName -Force
         $pkgSize = (Get-Item $pkgName).Length
-    } else {
+    }
+    else {
         $pkgName = Join-Path $outDir "$binName-$suffix-$version.gz"
         $raw = [System.IO.File]::ReadAllBytes($outPath)
         $ms = New-Object System.IO.MemoryStream
