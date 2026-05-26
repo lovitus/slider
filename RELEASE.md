@@ -24,7 +24,7 @@ Stable releases require these repository secrets:
 - `PACKAGE_GPG_PRIVATE_KEY`: ASCII-armored private key for signing APT Release metadata and RPM repository metadata.
 - `PACKAGE_GPG_PASSPHRASE`: passphrase for the signing key.
 
-The workflow uses the default `GITHUB_TOKEN` to create releases and push generated package metadata. If branch protection blocks bot pushes to `master` or `gh-pages`, use a dedicated release bot token and update the workflow credentials before cutting a stable release.
+The workflow uses the default `GITHUB_TOKEN` to create releases and push generated package metadata. If branch protection blocks bot pushes to `master` or `gh-pages`, use a dedicated release bot token and update the workflow credentials before cutting a stable release. GitHub Pages may need to be enabled once from the repository settings with `gh-pages` as the source branch.
 
 ## Artifact layout
 

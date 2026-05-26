@@ -163,7 +163,7 @@ jobs:
           ruby -c Formula/slider.rb
           python3 -m json.tool slider.json >/dev/null
 
-          if git diff --quiet -- Formula/slider.rb slider.json; then
+          if [[ -z "$(git status --porcelain -- Formula/slider.rb slider.json)" ]]; then
             echo "Package manifests are already up to date."
             exit 0
           fi
@@ -236,5 +236,7 @@ jobs:
           else
             gh api -X POST "repos/${GITHUB_REPOSITORY}/pages" \
               -f "source[branch]=gh-pages" \
-              -f "source[path]=/"
+              -f "source[path]=/" || {
+                echo "GitHub Pages could not be enabled with GITHUB_TOKEN. Enable Pages for gh-pages / manually if needed." >&2
+              }
           fi
