@@ -6,12 +6,12 @@
   "architecture": {
     "64bit": {
       "url": "https://github.com/lovitus/slider/releases/download/v0.16.5/slider_0.16.5_windows_amd64.zip",
-      "hash": "edd210d5d63f843655fadc95d0aee1a3868236f9a3f7ba53c14a951d672c0349",
+      "hash": "f456038fe4dc07a77fe59f351a88a58b70d762312bbb41f1f0a9fca55cdedb97",
       "bin": "slider.exe"
     },
     "arm64": {
       "url": "https://github.com/lovitus/slider/releases/download/v0.16.5/slider_0.16.5_windows_arm64.zip",
-      "hash": "3cf0a2bb1871768deba766b1201c9f72d76fdd8a1107bc363642135a4076092d",
+      "hash": "f426591cd6dd39a98428d203b4e7ae4af7582afe2328b318588c014862662323",
       "bin": "slider.exe"
     }
   },

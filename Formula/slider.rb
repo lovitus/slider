@@ -7,24 +7,24 @@ class Slider < Formula
   on_macos do
     on_arm do
       url "https://github.com/lovitus/slider/releases/download/v0.16.5/slider_0.16.5_darwin_arm64.tar.gz"
-      sha256 "c44dddc59dd6082558894a543c0c7846dce4e38f0fef501f2aa7f70a575f0baa"
+      sha256 "9d72e018f619468ef5288d36b500806b55d9f2b80ec30a39804cca7061e419fa"
     end
 
     on_intel do
       url "https://github.com/lovitus/slider/releases/download/v0.16.5/slider_0.16.5_darwin_amd64.tar.gz"
-      sha256 "43a540afe22c43d206c5ba6de55bc32207e03d77b475569fe9241f17865526b7"
+      sha256 "aa5356455d0752e5d607bec496d1e22310f370a01799809cdf5dfcdeb8100f70"
     end
   end
 
   on_linux do
     on_arm do
       url "https://github.com/lovitus/slider/releases/download/v0.16.5/slider_0.16.5_linux_arm64.tar.gz"
-      sha256 "8d5d2c0c433a858eb22f3a4f70bbc6eff74432daa0c057529c406241dd14f8e6"
+      sha256 "5b055fcef4f9e6340ef5ac52bd379216d0cd6785476851408d2b6e44e9bb154c"
     end
 
     on_intel do
       url "https://github.com/lovitus/slider/releases/download/v0.16.5/slider_0.16.5_linux_amd64.tar.gz"
-      sha256 "b83e6bbde865de90b92d54d3c744f3856f960aab7c2840e7ac6ff7bd72e1e8f7"
+      sha256 "fcda3228ea5a2b725bdd85afbe5b3303a0cd5f5ba1aef6447baab43d33111619"
     end
   end
 
