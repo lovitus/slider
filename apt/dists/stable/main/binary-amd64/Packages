@@ -4,10 +4,10 @@ Architecture: amd64
 Maintainer: Slider Maintainers <noreply@github.com>
 Installed-Size: 7388
 Filename: pool/main/s/slider/slider_0.16.5-1_amd64.deb
-Size: 3090696
-MD5sum: 48ea1ea24e84bdf4bb2994ba9ef9f6c9
-SHA1: 02e1a6e545cc4d4894b66d7b8a1665ae6b052a27
-SHA256: 3d1b70ad9ae8598dbf6735b76115131618158d011d6c8e0201b32d2cb19b95a6
+Size: 3090690
+MD5sum: 4a9a3bcaf3f4ed1ccb1084d43482cbf9
+SHA1: 529d56ec945d8eaa7957a799653a5055cbb21c5a
+SHA256: 170f36cbb1e53a2f086d2a7ddcc0266cfcad573c9843d3a539430ff051a33cb0
 Section: utils
 Priority: optional
 Homepage: https://github.com/lovitus/slider
