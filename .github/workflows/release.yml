@@ -161,16 +161,16 @@ jobs:
             --checksums "${RUNNER_TEMP}/slider-checksums.txt"
 
           ruby -c Formula/slider.rb
-          python3 -m json.tool bucket/slider.json >/dev/null
+          python3 -m json.tool slider.json >/dev/null
 
-          if git diff --quiet -- Formula/slider.rb bucket/slider.json; then
+          if git diff --quiet -- Formula/slider.rb slider.json; then
             echo "Package manifests are already up to date."
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add Formula/slider.rb bucket/slider.json
+          git add Formula/slider.rb slider.json
           git commit -m "chore: update package manifests for ${{ steps.meta.outputs.tag }}"
           git push origin HEAD:master
 

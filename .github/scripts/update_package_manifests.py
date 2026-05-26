@@ -170,7 +170,7 @@ def write_scoop_manifest(version: str, checksums: dict[str, str], path: Path) ->
 
 def main() -> None:
     args = parse_args()
-    scoop_path = Path("bucket/slider.json")
+    scoop_path = Path("slider.json")
     if not should_update(args.version, scoop_path):
         print(f"package manifests already point to a newer version than {args.version}; skipping")
         return

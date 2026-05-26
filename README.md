@@ -87,6 +87,8 @@ scoop install slider
 scoop update slider
 ```
 
+Scoop reads `slider.json` from the bucket repository root. If a bucket was added before the first stable package release, run `scoop bucket update slider` after the release lands and then retry `scoop install slider`.
+
 ### Homebrew (macOS/Linux)
 
 ```bash
