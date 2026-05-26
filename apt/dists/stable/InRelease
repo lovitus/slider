@@ -1,0 +1,46 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Architectures: amd64 arm64
+Codename: stable
+Components: main
+Date: Tue, 26 May 2026 07:49:55 +0000
+Description: Slider stable package repository
+Label: Slider
+Origin: Slider
+Suite: stable
+MD5Sum:
+ d5f94f2e7291d05ac41df487d33a9d7b              188 Release
+ 1d853c19859aa01ac113f32230c804a7              565 main/binary-amd64/Packages
+ 574d985454d7bf7168c2b06bb7d78539              413 main/binary-amd64/Packages.gz
+ 65c7e8aa39491b734c1751e459147e26              535 main/binary-arm64/Packages
+ 3a9befe16164409338138856e863346d              398 main/binary-arm64/Packages.gz
+SHA1:
+ e88c78307ed69b74f68bda4e5207c6f731233301              188 Release
+ be48df5edadd482414863c0662a696eb4054ef72              565 main/binary-amd64/Packages
+ d302336ce5480c2f28e7609c000693f602e92fae              413 main/binary-amd64/Packages.gz
+ 3f786be544f79f27399354fd3f6c696a25d1ebe9              535 main/binary-arm64/Packages
+ e4d90808d7bcf17b5186944fe25dbe69da84c642              398 main/binary-arm64/Packages.gz
+SHA256:
+ fe87bca58ae218a2416bc17bc6ee8cf4775f27c6cad3bbabe03f17ef221a9b95              188 Release
+ ffd740a0edba3e7dda10df33cd16547531bf45a31ba238c1bd679cb583a91ff9              565 main/binary-amd64/Packages
+ 3456b2c0b0938c39804895e45073d8f0b6f63ca563f22bcb1d80f41f0c85aa58              413 main/binary-amd64/Packages.gz
+ de00619c8c0db76a36e345984c23b163ea8d8b6f0d621e0d5c2fa5ff036ee04e              535 main/binary-arm64/Packages
+ 8467275f5f92f084beb12e73d5a86d62ba4c2b0bf188865c6a8945fd68ac5838              398 main/binary-arm64/Packages.gz
+SHA512:
+ 5ad5c029ffe9c1d8bf4dbd910864324c2c6c9170790908185164151230011827c92fe1bb9eaa075adfbb468be66ecefd98fe2dd94469aa2698ed116db2e30fae              188 Release
+ fc34daf4b1a5a16ae2960eeadd671d5b983941923020dc94a80d5ff0cbcdca6cf732b38042bb8afcd809c8a8ee43cdc6847db45486e55987073eb8aeb2762a05              565 main/binary-amd64/Packages
+ 57e38670167aee72292abb882aae40c9876037cb0b30e19da6ef7efd9fca836d6af586efc551aeb8c46c79599fd9641fb5a4c604154c99358a4c23856d85001a              413 main/binary-amd64/Packages.gz
+ eb559842f59fc9654649dbab6355b9e94b13f904582cc26e6861206430abd318144e0cbf707652618d75a92e0e8e76032cf37e95eec188a93f43930dfb9976ce              535 main/binary-arm64/Packages
+ 46447341e0dffe754f5fd8ac5ce2d64f4a0fbca74a3379c4c99516e0ca96b8451454603140b1d3eb1f1eca16b63938559a90722fcbaf29d16f9cc2d4e2b4a825              398 main/binary-arm64/Packages.gz
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEE3gIkRWqU0XGWWgrdVp+21ooRrlsFAmoVUKMACgkQVp+21ooR
+rlsH6wgAge81g99r4g6FmWefadXcSfp8M1b1WMG5jQfj/UOjy9EBG3mzO9XSTrI9
+PMY4v8gaETlXZXi2v+ZjebF8ha4fEKXN8C8p5nlMnFRgzVMzqLAm8953S71J48Da
+b0EwNfLk+YsZKwCn1N+WIlQEkAbS67F7PEHhdJnsxtWzsWW3KWYW81oqqQKqFQKp
+uZqiNW3NhIOLzEyDgE/RJcRGigrtHAH9e91eN6Ry5DYiUL7zqVGEU3CaUCxjAJm5
+RBL43PopdxRGnETcwDYrtixrqtPMrS+adJjObIdXt828zEk1xKDyobEg3brbLRhN
+P/fcJs4CvhlxXUhA2QYOPMnWBn031A==
+=QArq
+-----END PGP SIGNATURE-----

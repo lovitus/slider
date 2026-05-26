@@ -1,0 +1,16 @@
+Package: slider
+Version: 0.16.5-1
+Architecture: amd64
+Maintainer: Slider Maintainers <noreply@github.com>
+Installed-Size: 7388
+Filename: pool/main/s/slider/slider_0.16.5-1_amd64.deb
+Size: 3090696
+MD5sum: 48ea1ea24e84bdf4bb2994ba9ef9f6c9
+SHA1: 02e1a6e545cc4d4894b66d7b8a1665ae6b052a27
+SHA256: 3d1b70ad9ae8598dbf6735b76115131618158d011d6c8e0201b32d2cb19b95a6
+Section: utils
+Priority: optional
+Homepage: https://github.com/lovitus/slider
+Description: A forward proxy with multiple protocol support, DNS forwarding, and ipset management.
+Architecture-Variant: amd64v1
+
