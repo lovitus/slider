@@ -1,5 +1,5 @@
 // source code from https://github.com/v2rayA/shadowsocksR
-// Just copy here to use glider's builtin buffer pool.
+// Just copy here to use slider's builtin buffer pool.
 // As this protocol hasn't been maintained since 2017, it doesn't deserve our research to rewrite it.
 
 package internal
@@ -12,11 +12,11 @@ import (
 	"net"
 	"time"
 
-	"github.com/nadoo/glider/pool"
-	"github.com/nadoo/glider/proxy"
-	"github.com/nadoo/glider/proxy/ssr/internal/cipher"
-	"github.com/nadoo/glider/proxy/ssr/internal/obfs"
-	"github.com/nadoo/glider/proxy/ssr/internal/protocol"
+	"github.com/lovitus/slider/pool"
+	"github.com/lovitus/slider/proxy"
+	"github.com/lovitus/slider/proxy/ssr/internal/cipher"
+	"github.com/lovitus/slider/proxy/ssr/internal/obfs"
+	"github.com/lovitus/slider/proxy/ssr/internal/protocol"
 )
 
 const bufSize = proxy.TCPBufSize

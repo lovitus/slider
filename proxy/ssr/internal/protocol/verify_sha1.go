@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/binary"
 
-	"github.com/nadoo/glider/proxy/ssr/internal/ssr"
-	"github.com/nadoo/glider/proxy/ssr/internal/tools"
+	"github.com/lovitus/slider/proxy/ssr/internal/ssr"
+	"github.com/lovitus/slider/proxy/ssr/internal/tools"
 )
 
 func init() {

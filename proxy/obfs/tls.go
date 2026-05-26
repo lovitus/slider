@@ -17,7 +17,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/nadoo/glider/pool"
+	"github.com/lovitus/slider/pool"
 )
 
 const (

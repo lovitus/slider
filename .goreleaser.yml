@@ -1,78 +1,95 @@
-# Make sure to check the documentation at http://goreleaser.com
+version: 2
 
-# release:
-# git tag -a v0.1.0 -m "v0.1.0"
-# git push origin v0.1.0
-# goreleaser release --skip-publish --rm-dist
+project_name: slider
 
-# #git tag -d v0.1.0
-# #git push origin --delete tag v0.1.0
+metadata:
+  mod_timestamp: "{{ .CommitTimestamp }}"
 
-# snapshot:
-# goreleaser --snapshot --rm-dist
-
-# https://goreleaser.com/customization/
-
-before:
-  hooks:
-    - go mod tidy
-
-# https://goreleaser.com/customization/build/
 builds:
-  - id: default
+  - id: slider-archives
+    main: .
+    binary: slider
     env:
       - CGO_ENABLED=0
-    goos:
-      - windows
-      - linux
-      - darwin
-    goarch:
-      - 386
-      - amd64
-      - arm
-      - arm64
-      - mips
-      - mipsle
-      - mips64
-      - mips64le
-    goarm:
-      - 6
-      - 7
-    gomips:
-      - hardfloat
-      - softfloat
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+    targets:
+      - windows_386
+      - windows_amd64_v1
+      - windows_arm64
+      - linux_386
+      - linux_amd64_v1
+      - linux_arm64
+      - linux_arm_6
+      - linux_arm_7
+      - linux_mips_softfloat
+      - linux_mipsle_softfloat
+      - linux_mips64
+      - linux_mips64le
+      - darwin_amd64_v1
+      - darwin_arm64
+      - freebsd_386
+      - freebsd_amd64_v1
 
-    ignore:
-      - goos: darwin
-        goarch: 386
+  - id: slider-linux-packages
+    main: .
+    binary: slider
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+    targets:
+      - linux_amd64_v1
+      - linux_arm64
 
-# https://goreleaser.com/customization/archive/
 archives:
-  - id: default
-    builds:
-      - default
-    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if .Mips }}_{{ .Mips }}{{ end }}"
-    wrap_in_directory: true
-    format: tar.gz
+  - id: slider
+    ids:
+      - slider-archives
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ with .Arm }}v{{ . }}{{ end }}{{ with .Mips }}_{{ . }}{{ end }}"
+    formats:
+      - tar.gz
     format_overrides:
       - goos: windows
-        format: zip
+        formats:
+          - zip
+    wrap_in_directory: false
     files:
       - LICENSE
       - README.md
+      - RELEASE.md
       - config/**/*
       - systemd/*
 
-# https://goreleaser.com/customization/snapshots/
-snapshot:
-  name_template: "dev@{{.ShortCommit}}"
+nfpms:
+  - id: slider-linux
+    package_name: slider
+    file_name_template: "{{ .ConventionalFileName }}"
+    ids:
+      - slider-linux-packages
+    vendor: Slider
+    homepage: https://github.com/lovitus/slider
+    maintainer: Slider Maintainers <noreply@github.com>
+    description: A forward proxy with multiple protocol support, DNS forwarding, and ipset management.
+    license: GPL-3.0-only
+    formats:
+      - deb
+      - rpm
+    bindir: /usr/bin
+    section: utils
+    priority: optional
+    release: "1"
+    contents:
+      - src: systemd/slider@.service
+        dst: /lib/systemd/system/slider@.service
 
-# https://goreleaser.com/customization/checksum/
 checksum:
   name_template: "{{ .ProjectName }}_{{ .Version }}_checksums.txt"
 
-# https://goreleaser.com/customization/release/
+snapshot:
+  version_template: "dev-{{ .ShortCommit }}"
+
 release:
-  prerelease: true
-  draft: true
-  
+  prerelease: auto
+  draft: false
+  replace_existing_artifacts: true

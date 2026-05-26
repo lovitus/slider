@@ -7,7 +7,7 @@ import (
 	"math/rand"
 	"strings"
 
-	"github.com/nadoo/glider/proxy/ssr/internal/ssr"
+	"github.com/lovitus/slider/proxy/ssr/internal/ssr"
 )
 
 var (

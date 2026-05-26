@@ -3,7 +3,7 @@ package obfs
 import (
 	"strings"
 
-	"github.com/nadoo/glider/proxy/ssr/internal/ssr"
+	"github.com/lovitus/slider/proxy/ssr/internal/ssr"
 )
 
 type creator func() IObfs

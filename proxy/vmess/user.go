@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nadoo/glider/pool"
+	"github.com/lovitus/slider/pool"
 )
 
 // User of vmess client.

@@ -1,3 +1,4 @@
+//go:build !linux
 // +build !linux
 
 package ipset
@@ -5,7 +6,7 @@ package ipset
 import (
 	"errors"
 
-	"github.com/nadoo/glider/rule"
+	"github.com/lovitus/slider/rule"
 )
 
 // Manager struct

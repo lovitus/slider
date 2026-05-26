@@ -3,7 +3,7 @@ package obfs
 import (
 	"math/rand"
 
-	"github.com/nadoo/glider/proxy/ssr/internal/ssr"
+	"github.com/lovitus/slider/proxy/ssr/internal/ssr"
 )
 
 type randomHead struct {

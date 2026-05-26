@@ -10,8 +10,8 @@ import (
 	"github.com/insomniacslk/dhcp/dhcpv4/nclient4"
 	"github.com/insomniacslk/dhcp/dhcpv4/server4"
 
-	"github.com/nadoo/glider/log"
-	"github.com/nadoo/glider/service"
+	"github.com/lovitus/slider/log"
+	"github.com/lovitus/slider/service"
 )
 
 var leaseTime = time.Hour * 12

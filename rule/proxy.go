@@ -5,8 +5,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/nadoo/glider/log"
-	"github.com/nadoo/glider/proxy"
+	"github.com/lovitus/slider/log"
+	"github.com/lovitus/slider/proxy"
 )
 
 // Proxy implements the proxy.Proxy interface with rule support.

@@ -10,8 +10,8 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
-	"github.com/nadoo/glider/log"
-	"github.com/nadoo/glider/proxy"
+	"github.com/lovitus/slider/log"
+	"github.com/lovitus/slider/proxy"
 )
 
 // SSH is a base ssh struct with persistent client and keepalive support.

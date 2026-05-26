@@ -7,6 +7,8 @@
 
 # Test binary, build with `go test -c`
 *.test
+*.pyc
+__pycache__/
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
@@ -31,7 +33,8 @@ dist
 config/rules.d/*.rule
 config/rules.d/*.list
 
-glider
+/slider
+/glider
 /bak/
 /rules.d/
 task history with old ai.md

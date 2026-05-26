@@ -5,7 +5,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/nadoo/glider/log"
+	"github.com/lovitus/slider/log"
 )
 
 // Direct proxy.

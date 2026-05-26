@@ -12,7 +12,7 @@ import (
 	"io"
 	"net"
 
-	"github.com/nadoo/glider/pool"
+	"github.com/lovitus/slider/pool"
 )
 
 type aeadWriter struct {

@@ -15,7 +15,7 @@ check=http://www.msftconnecttest.com/connecttest.txt#expect=200
 checkinterval=30
 
 # as a ipset manager
-ipset=glider
+ipset=slider
 
 # matches 192.168.0.0/16
 cidr=192.168.0.0/16

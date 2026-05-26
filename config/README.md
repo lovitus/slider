@@ -2,7 +2,7 @@
 ## Config File 
 Command:
 ```bash
-glider -config glider.conf
+slider -config slider.conf
 ```
 Config file, **just use the command line flag name as key name**:
 ```bash
@@ -14,7 +14,7 @@ Config file, **just use the command line flag name as key name**:
 
 Example:
 ```bash
-### glider config file
+### slider config file
 
 # verbose mode, print logs
 verbose
@@ -56,7 +56,7 @@ rules-dir=rules.d
 #include=more.inc.conf
 ```
 See:
-- [glider.conf.example](config/glider.conf.example)
+- [slider.conf.example](config/slider.conf.example)
 - [examples](config/examples)
 
 ## Rule File
@@ -79,7 +79,7 @@ dnsserver=208.67.222.222:53
 #   - add ip/cidrs in rule files on startup
 #   - add resolved ips for domains in rule files by dns forwarding server 
 # Usually used in transparent proxy mode on linux
-ipset=glider
+ipset=slider
 
 # YOU CAN SPECIFY DESTINATIONS TO USE THE ABOVE FORWARDERS
 # matches abc.com and *.abc.com

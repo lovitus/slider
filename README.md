@@ -1,10 +1,10 @@
-# [glider](https://github.com/nadoo/glider)
+# [slider](https://github.com/lovitus/slider)
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/nadoo/glider?style=flat-square)](https://goreportcard.com/report/github.com/nadoo/glider)
-[![GitHub release](https://img.shields.io/github/v/release/nadoo/glider.svg?style=flat-square&include_prereleases)](https://github.com/nadoo/glider/releases)
-[![Actions Status](https://img.shields.io/github/workflow/status/nadoo/glider/Build?style=flat-square)](https://github.com/nadoo/glider/actions)
+[![Go Report Card](https://goreportcard.com/badge/github.com/lovitus/slider?style=flat-square)](https://goreportcard.com/report/github.com/lovitus/slider)
+[![GitHub release](https://img.shields.io/github/v/release/lovitus/slider.svg?style=flat-square&include_prereleases)](https://github.com/lovitus/slider/releases)
+[![Actions Status](https://img.shields.io/github/workflow/status/lovitus/slider/Build?style=flat-square)](https://github.com/lovitus/slider/actions)
 
-glider is a forward proxy with multiple protocols support, and also a dns/dhcp server with ipset management features(like dnsmasq).
+slider is a forward proxy with multiple protocols support, and also a dns/dhcp server with ipset management features(like dnsmasq).
 
 we can set up local listeners as proxy servers, and forward requests to internet via forwarders.
 
@@ -73,29 +73,92 @@ we can set up local listeners as proxy servers, and forward requests to internet
 ## Install
 
 Download:
-- [https://github.com/nadoo/glider/releases](https://github.com/nadoo/glider/releases)
+- [https://github.com/lovitus/slider/releases](https://github.com/lovitus/slider/releases)
+
+Package managers:
+
+### Scoop (Windows)
+
+```powershell
+scoop bucket add slider https://github.com/lovitus/slider
+scoop install slider
+
+# Update later
+scoop update slider
+```
+
+### Homebrew (macOS/Linux)
+
+```bash
+brew tap lovitus/slider https://github.com/lovitus/slider
+brew install slider
+
+# Update later
+brew update
+brew upgrade slider
+```
+
+Because this repository is not named `homebrew-slider`, include the repository URL when running `brew tap`.
+
+### APT (Debian/Ubuntu amd64/arm64)
+
+```bash
+arch="$(dpkg --print-architecture)"
+case "$arch" in amd64|arm64) ;; *) echo "unsupported APT arch: $arch" >&2; exit 1;; esac
+sudo install -d -m 0755 /etc/apt/keyrings
+curl -fsSL https://lovitus.github.io/slider/apt/slider-archive-keyring.gpg \
+  | sudo tee /etc/apt/keyrings/slider-archive-keyring.gpg >/dev/null
+echo "deb [arch=$arch signed-by=/etc/apt/keyrings/slider-archive-keyring.gpg] https://lovitus.github.io/slider/apt stable main" \
+  | sudo tee /etc/apt/sources.list.d/slider.list >/dev/null
+sudo apt update
+sudo apt install slider
+
+# Update later
+sudo apt update
+sudo apt upgrade slider
+```
+
+### DNF/YUM (x86_64/aarch64)
+
+```bash
+sudo tee /etc/yum.repos.d/slider.repo >/dev/null <<'EOF'
+[slider]
+name=Slider stable repository
+baseurl=https://lovitus.github.io/slider/rpm/$basearch
+enabled=1
+repo_gpgcheck=1
+gpgcheck=0
+gpgkey=https://lovitus.github.io/slider/rpm/RPM-GPG-KEY-slider
+EOF
+
+sudo dnf install slider
+# or: sudo yum install slider
+
+# Update later
+sudo dnf upgrade slider
+# or: sudo yum upgrade slider
+```
+
+The RPM repository signs repository metadata. Individual RPM packages are not signed in this release setup, so the repo file uses `repo_gpgcheck=1` and `gpgcheck=0`.
 
 Docker:
 ```bash
-docker pull nadoo/glider
-#docker pull ghcr.io/nadoo/glider
+docker pull lovitus/slider
+#docker pull ghcr.io/lovitus/slider
 ```
 
-ArchLinux:
-```bash
-sudo pacman -S glider
-```
+Maintainers can find release and package publishing notes in [RELEASE.md](RELEASE.md).
 
 ## Usage
 
 ```bash
-glider -h
+slider -h
 ```
 <details>
 <summary>click to see details</summary>
 
 ```bash
-glider 0.13.0 usage:
+slider dev usage:
   -check string
     	check=tcp[://HOST:PORT]: tcp port connect check
     	check=http://HOST[:PORT][/URI][#expect=STRING_IN_RESP_LINE]
@@ -157,10 +220,10 @@ glider 0.13.0 usage:
 
 run:
 ```bash
-glider -config CONFIGPATH
+slider -config CONFIGPATH
 ```
 ```bash
-glider -verbose -listen :8443 -forward SCHEME://HOST:PORT
+slider -verbose -listen :8443 -forward SCHEME://HOST:PORT
 ```
 
 #### Schemes
@@ -292,7 +355,7 @@ Services:
   dhcpd: service=dhcpd,INTERFACE,START_IP,END_IP
     e.g.,service=dhcpd,eth1,192.168.50.100,192.168.50.199
 
-Config file format(see `./glider.conf.example` as an example):
+Config file format(see `./slider.conf.example` as an example):
   # COMMENT LINE
   KEY=VALUE
   KEY=VALUE
@@ -307,37 +370,37 @@ Config file format(see `./glider.conf.example` as an example):
 <summary>click to see details</summary>
 
 ```bash
-  ./glider -config glider.conf
-    -run glider with specified config file.
+  ./slider -config slider.conf
+    -run slider with specified config file.
 
-  ./glider -listen :8443 -verbose
+  ./slider -listen :8443 -verbose
     -listen on :8443, serve as http/socks5 proxy on the same port, in verbose mode.
 
-  ./glider -listen ss://AEAD_CHACHA20_POLY1305:pass@:8443 -verbose
+  ./slider -listen ss://AEAD_CHACHA20_POLY1305:pass@:8443 -verbose
     -listen on 0.0.0.0:8443 as a ss server.
 
-  ./glider -listen tls://:443?cert=crtFilePath&key=keyFilePath,http:// -verbose
+  ./slider -listen tls://:443?cert=crtFilePath&key=keyFilePath,http:// -verbose
     -listen on :443 as a https(http over tls) proxy server.
 
-  ./glider -listen http://:8080 -forward socks5://127.0.0.1:1080
+  ./slider -listen http://:8080 -forward socks5://127.0.0.1:1080
     -listen on :8080 as a http proxy server, forward all requests via socks5 server.
 
-  ./glider -listen socks5://:1080 -forward "tls://abc.com:443,vmess://security:uuid@?alterID=10"
+  ./slider -listen socks5://:1080 -forward "tls://abc.com:443,vmess://security:uuid@?alterID=10"
     -listen on :1080 as a socks5 server, forward all requests via remote tls+vmess server.
 
-  ./glider -listen socks5://:1080 -forward ss://method:pass@server1:port1 -forward ss://method:pass@server2:port2 -strategy rr
+  ./slider -listen socks5://:1080 -forward ss://method:pass@server1:port1 -forward ss://method:pass@server2:port2 -strategy rr
     -listen on :1080 as socks5 server, forward requests via server1 and server2 in round robin mode.
 
-  ./glider -listen tcp://:80 -forward tcp://2.2.2.2:80
+  ./slider -listen tcp://:80 -forward tcp://2.2.2.2:80
     -tcp tunnel: listen on :80 and forward all requests to 2.2.2.2:80.
 
-  ./glider -listen udp://:53 -forward ss://method:pass@1.1.1.1:8443,udp://8.8.8.8:53
+  ./slider -listen udp://:53 -forward ss://method:pass@1.1.1.1:8443,udp://8.8.8.8:53
     -listen on :53 and forward all udp requests to 8.8.8.8:53 via remote ss server.
 
-  ./glider -listen socks5://:1080 -listen http://:8080 -forward ss://method:pass@1.1.1.1:8443
+  ./slider -listen socks5://:1080 -listen http://:8080 -forward ss://method:pass@1.1.1.1:8443
     -listen on :1080 as socks5 server, :8080 as http proxy server, forward all requests via remote ss server.
 
-  ./glider -verbose -listen -dns=:53 -dnsserver=8.8.8.8:53 -forward ss://method:pass@server:port -dnsrecord=www.example.com/1.2.3.4
+  ./slider -verbose -listen -dns=:53 -dnsserver=8.8.8.8:53 -forward ss://method:pass@server:port -dnsrecord=www.example.com/1.2.3.4
     -listen on :53 as dns server, forward to 8.8.8.8:53 via ss server.
 ```
 
@@ -346,7 +409,7 @@ Config file format(see `./glider.conf.example` as an example):
 ## Config
 
 - [ConfigFile](config)
-  - [glider.conf.example](config/glider.conf.example)
+  - [slider.conf.example](config/slider.conf.example)
   - [office.rule.example](config/rules.d/office.rule.example)
 - [Examples](config/examples)
   - [transparent proxy with dnsmasq](config/examples/8.transparent_proxy_with_dnsmasq)
@@ -360,33 +423,33 @@ Config file format(see `./glider.conf.example` as an example):
 
 ## Linux Service
 
-- systemd: [https://github.com/nadoo/glider/blob/master/systemd/](https://github.com/nadoo/glider/blob/master/systemd/)
+- systemd: [https://github.com/lovitus/slider/blob/master/systemd/](https://github.com/lovitus/slider/blob/master/systemd/)
 
 ## Customize Build
 
-<details><summary>You can customize and build glider if you want a smaller binary (click to see details)</summary>
+<details><summary>You can customize and build slider if you want a smaller binary (click to see details)</summary>
 
 
 1. Clone the source code:
   ```bash
-  git clone https://github.com/nadoo/glider
+  git clone https://github.com/lovitus/slider
   ```
 2. Customize features:
 
   ```bash
   open `feature.go` & `feature_linux.go`, comment out the packages you don't need
-  // _ "github.com/nadoo/glider/proxy/kcp"
+  // _ "github.com/lovitus/slider/proxy/kcp"
   ```
 
 3. Build it(requires **Go 1.15+** )
   ```bash
-  cd glider && go build -v -i -ldflags "-s -w"
+  cd slider && go build -v -i -ldflags "-s -w"
   ```
 
   </details>
 
 ## Proxy & Protocol Chains
-<details><summary>In glider, you can easily chain several proxy servers or protocols together (click to see details)</summary>
+<details><summary>In slider, you can easily chain several proxy servers or protocols together (click to see details)</summary>
 
 - Chain proxy servers:
 
@@ -424,5 +487,4 @@ Config file format(see `./glider.conf.example` as an example):
 
 - [ipset](https://github.com/nadoo/ipset): netlink ipset package for Go.
 - [conflag](https://github.com/nadoo/conflag): a drop-in replacement for Go's standard flag package with config file support.
-- [ArchLinux](https://www.archlinux.org/packages/community/x86_64/glider): a great linux distribution with glider pre-built package.
 - [urlencode](https://www.w3schools.com/tags/ref_urlencode.asp): you should encode special characters in scheme url. e.g., `@`->`%40`

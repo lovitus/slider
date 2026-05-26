@@ -9,8 +9,8 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/nadoo/glider/pool"
-	"github.com/nadoo/glider/proxy"
+	"github.com/lovitus/slider/pool"
+	"github.com/lovitus/slider/proxy"
 )
 
 // Checker is a forwarder health checker.

@@ -1,6 +1,6 @@
-# Glider rule configuration file.
+# Slider rule configuration file.
 # 
-# Format is the same as glider main config file.
+# Format is the same as slider main config file.
 # EXCEPTION: Listeners are NOT allowed to setup here.
 
 # FORWARDERS
@@ -26,7 +26,7 @@ dnsserver=208.67.222.222:53
 #   - add ip/cidrs in rule files on startup
 #   - add resolved ips for domains in rule files by dns forwarding server 
 # Usually used in transparent proxy mode on linux
-ipset=glider
+ipset=slider
 
 # DESTINATIONS
 # ------------

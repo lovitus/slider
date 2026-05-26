@@ -7,9 +7,9 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/nadoo/glider/log"
-	"github.com/nadoo/glider/pool"
-	"github.com/nadoo/glider/proxy"
+	"github.com/lovitus/slider/log"
+	"github.com/lovitus/slider/pool"
+	"github.com/lovitus/slider/proxy"
 )
 
 var keyGUID = []byte("258EAFA5-E914-47DA-95CA-C5AB0DC85B11")

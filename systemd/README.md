@@ -5,30 +5,30 @@
 #### 1. copy binary file
 
 ```bash
-cp glider /usr/bin/
+cp slider /usr/bin/
 ```
 
 #### 2. add service file
 
 ```bash
 # copy service file to systemd
-cp systemd/glider@.service /etc/systemd/system/
+cp systemd/slider@.service /etc/systemd/system/
 ```
 
-#### 3. add config file: ***glider***.conf
+#### 3. add config file: ***slider***.conf
 
 ```bash
-# copy config file to /etc/glider/
-mkdir /etc/glider/
-cp ./config/glider.conf.example /etc/glider/glider.conf
+# copy config file to /etc/slider/
+mkdir /etc/slider/
+cp ./config/slider.conf.example /etc/slider/slider.conf
 ```
 
-#### 4. enable and start service: glider@***glider***
+#### 4. enable and start service: slider@***slider***
 
 ```bash
 # enable and start service
-systemctl enable glider@glider
-systemctl start glider@glider
+systemctl enable slider@slider
+systemctl start slider@slider
 ```
 
-See [glider@.service](glider%40.service)
+See [slider@.service](slider%40.service)

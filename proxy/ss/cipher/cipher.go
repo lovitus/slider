@@ -6,8 +6,8 @@ import (
 	"net"
 	"strings"
 
-	"github.com/nadoo/glider/proxy/ss/cipher/internal/shadowaead"
-	"github.com/nadoo/glider/proxy/ss/cipher/internal/shadowstream"
+	"github.com/lovitus/slider/proxy/ss/cipher/internal/shadowaead"
+	"github.com/lovitus/slider/proxy/ss/cipher/internal/shadowstream"
 )
 
 // Cipher interface.

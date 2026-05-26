@@ -1,4 +1,4 @@
-module github.com/nadoo/glider
+module github.com/lovitus/slider
 
 go 1.24.0
 

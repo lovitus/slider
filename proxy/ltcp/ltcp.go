@@ -14,8 +14,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/nadoo/glider/log"
-	"github.com/nadoo/glider/proxy"
+	"github.com/lovitus/slider/log"
+	"github.com/lovitus/slider/proxy"
 )
 
 // LTCP is a local TCP port forwarder.

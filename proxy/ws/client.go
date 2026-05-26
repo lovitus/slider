@@ -6,8 +6,8 @@ import (
 	"net"
 	"net/textproto"
 
-	"github.com/nadoo/glider/pool"
-	"github.com/nadoo/glider/proxy"
+	"github.com/lovitus/slider/pool"
+	"github.com/lovitus/slider/proxy"
 )
 
 func init() {

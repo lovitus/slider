@@ -8,10 +8,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/nadoo/glider/log"
-	"github.com/nadoo/glider/pool"
-	"github.com/nadoo/glider/proxy"
-	"github.com/nadoo/glider/proxy/socks"
+	"github.com/lovitus/slider/log"
+	"github.com/lovitus/slider/pool"
+	"github.com/lovitus/slider/proxy"
+	"github.com/lovitus/slider/proxy/socks"
 )
 
 // NewSocks5Server returns a socks5 proxy server.

@@ -1,5 +1,5 @@
 
-# Glider Configuration Examples
+# Slider Configuration Examples
 
 ## 1. Simple Proxy Service
 Just listen on 8443 as HTTP/SOCKS5 proxy on the same port, forward all requests directly.

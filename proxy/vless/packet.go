@@ -6,7 +6,7 @@ import (
 	"io"
 	"net"
 
-	"github.com/nadoo/glider/pool"
+	"github.com/lovitus/slider/pool"
 )
 
 // PktConn is a udp Packet.Conn.

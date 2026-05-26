@@ -1,28 +1,240 @@
 name: Release
+
 on:
   push:
     tags:
-      - v*
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to build and release, for example v1.0.0 or v1.0.0-rc.1"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pages: write
 
 jobs:
   release:
-    name: Release on GitHub
+    name: Build and publish release
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - name: Resolve tag
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
+            tag="${{ inputs.tag }}"
+          else
+            tag="${GITHUB_REF_NAME}"
+          fi
+
+          tag="${tag#refs/tags/}"
+          stable_re='^v[0-9]+\.[0-9]+\.[0-9]+$'
+          prerelease_re='^v[0-9]+\.[0-9]+\.[0-9]+-.+$'
+
+          if [[ "${tag}" =~ ${stable_re} ]]; then
+            stable=true
+          elif [[ "${tag}" =~ ${prerelease_re} ]]; then
+            stable=false
+          else
+            echo "Invalid release tag '${tag}'. Use vX.Y.Z for stable or vX.Y.Z-suffix for prereleases." >&2
+            exit 1
+          fi
+
+          echo "tag=${tag}" >> "${GITHUB_OUTPUT}"
+          echo "version=${tag#v}" >> "${GITHUB_OUTPUT}"
+          echo "stable=${stable}" >> "${GITHUB_OUTPUT}"
+          echo "dist=dist" >> "${GITHUB_OUTPUT}"
+
+      - name: Preflight package signing secrets
+        if: ${{ steps.meta.outputs.stable == 'true' }}
+        shell: bash
+        env:
+          PACKAGE_GPG_PRIVATE_KEY: ${{ secrets.PACKAGE_GPG_PRIVATE_KEY }}
+          PACKAGE_GPG_PASSPHRASE: ${{ secrets.PACKAGE_GPG_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${PACKAGE_GPG_PRIVATE_KEY}" || -z "${PACKAGE_GPG_PASSPHRASE}" ]]; then
+            echo "Stable releases require PACKAGE_GPG_PRIVATE_KEY and PACKAGE_GPG_PASSPHRASE." >&2
+            exit 1
+          fi
+
+      - name: Checkout release tag
+        uses: actions/checkout@v4
         with:
+          ref: ${{ steps.meta.outputs.tag }}
           fetch-depth: 0
+
       - name: Set up Go
-        uses: actions/setup-go@v1
+        uses: actions/setup-go@v5
         with:
-          go-version: 1.15.x
-      - name: Go Env
-        run: go env
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v2
+          go-version-file: go.mod
+          cache: true
+
+      - name: Test
+        run: go test -vet=off ./...
+
+      - name: Check GoReleaser config
+        uses: goreleaser/goreleaser-action@v6
         with:
-          version: latest
-          args: release --rm-dist
+          distribution: goreleaser
+          version: v2.16.0
+          args: check
+
+      - name: Build release artifacts for verification
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: v2.16.0
+          args: release --clean --skip=publish
+
+      - name: Install artifact inspection tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y rpm
+
+      - name: Verify release artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${{ steps.meta.outputs.version }}"
+          dist="${{ steps.meta.outputs.dist }}"
+
+          for file in \
+            "slider_${version}_darwin_amd64.tar.gz" \
+            "slider_${version}_darwin_arm64.tar.gz" \
+            "slider_${version}_linux_amd64.tar.gz" \
+            "slider_${version}_linux_arm64.tar.gz" \
+            "slider_${version}_windows_amd64.zip" \
+            "slider_${version}_windows_arm64.zip" \
+            "slider_${version}_checksums.txt"; do
+            test -f "${dist}/${file}" || { echo "Missing ${dist}/${file}" >&2; exit 1; }
+          done
+
+          tar -tzf "${dist}/slider_${version}_linux_amd64.tar.gz" | grep -qx "slider"
+          unzip -Z1 "${dist}/slider_${version}_windows_amd64.zip" | grep -qx "slider.exe"
+          dpkg-deb -c "${dist}/slider_${version}-1_amd64.deb" | grep -q "/usr/bin/slider$"
+          rpm -qpl "${dist}/slider-${version}-1.x86_64.rpm" | grep -qx "/usr/bin/slider"
+
+      - name: Publish GitHub release assets
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: v2.16.0
+          args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Linux repository tools
+        if: ${{ steps.meta.outputs.stable == 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y apt-utils createrepo-c dpkg-dev gnupg rpm
+
+      - name: Checkout package manifests branch
+        if: ${{ steps.meta.outputs.stable == 'true' }}
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          path: manifest-master
+
+      - name: Update Homebrew and Scoop manifests
+        if: ${{ steps.meta.outputs.stable == 'true' }}
+        shell: bash
+        working-directory: manifest-master
+        run: |
+          set -euo pipefail
+
+          cp "${GITHUB_WORKSPACE}/${{ steps.meta.outputs.dist }}/slider_${{ steps.meta.outputs.version }}_checksums.txt" "${RUNNER_TEMP}/slider-checksums.txt"
+
+          python3 "${GITHUB_WORKSPACE}/.github/scripts/update_package_manifests.py" \
+            --version "${{ steps.meta.outputs.version }}" \
+            --checksums "${RUNNER_TEMP}/slider-checksums.txt"
+
+          ruby -c Formula/slider.rb
+          python3 -m json.tool bucket/slider.json >/dev/null
+
+          if git diff --quiet -- Formula/slider.rb bucket/slider.json; then
+            echo "Package manifests are already up to date."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Formula/slider.rb bucket/slider.json
+          git commit -m "chore: update package manifests for ${{ steps.meta.outputs.tag }}"
+          git push origin HEAD:master
+
+      - name: Prepare package repository worktree
+        if: ${{ steps.meta.outputs.stable == 'true' }}
+        id: package_pages
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          pages_dir="${RUNNER_TEMP}/slider-package-pages"
+          rm -rf "${pages_dir}"
+          git clone --no-checkout "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "${pages_dir}"
+          cd "${pages_dir}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git ls-remote --exit-code --heads origin gh-pages >/dev/null 2>&1; then
+            git checkout gh-pages
+          else
+            git checkout --orphan gh-pages
+            git rm -rf . >/dev/null 2>&1 || true
+          fi
+          echo "dir=${pages_dir}" >> "${GITHUB_OUTPUT}"
+
+      - name: Update Linux package repositories
+        if: ${{ steps.meta.outputs.stable == 'true' }}
+        shell: bash
+        env:
+          PACKAGE_GPG_PRIVATE_KEY: ${{ secrets.PACKAGE_GPG_PRIVATE_KEY }}
+          PACKAGE_GPG_PASSPHRASE: ${{ secrets.PACKAGE_GPG_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          bash .github/scripts/update_linux_repos.sh \
+            --version "${{ steps.meta.outputs.version }}" \
+            --tag "${{ steps.meta.outputs.tag }}" \
+            --artifacts "${{ steps.meta.outputs.dist }}" \
+            --pages-dir "${{ steps.package_pages.outputs.dir }}"
+
+      - name: Publish Linux package repositories
+        if: ${{ steps.meta.outputs.stable == 'true' }}
+        shell: bash
+        working-directory: ${{ steps.package_pages.outputs.dir }}
+        run: |
+          set -euo pipefail
+          if git status --porcelain | grep . >/dev/null; then
+            git add -A
+            git commit -m "chore: update Linux package repositories for ${{ steps.meta.outputs.tag }}"
+            git push origin HEAD:gh-pages
+          else
+            echo "Linux package repositories are already up to date."
+          fi
+
+      - name: Ensure GitHub Pages is enabled
+        if: ${{ steps.meta.outputs.stable == 'true' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if gh api "repos/${GITHUB_REPOSITORY}/pages" >/dev/null 2>&1; then
+            echo "GitHub Pages is already enabled."
+          else
+            gh api -X POST "repos/${GITHUB_REPOSITORY}/pages" \
+              -f "source[branch]=gh-pages" \
+              -f "source[path]=/"
+          fi

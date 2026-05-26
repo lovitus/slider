@@ -7,9 +7,9 @@ import (
 
 	"github.com/nadoo/conflag"
 
-	"github.com/nadoo/glider/dns"
-	"github.com/nadoo/glider/log"
-	"github.com/nadoo/glider/rule"
+	"github.com/lovitus/slider/dns"
+	"github.com/lovitus/slider/log"
+	"github.com/lovitus/slider/rule"
 )
 
 var flag = conflag.New()
@@ -290,8 +290,8 @@ func usage() {
 	fmt.Fprintf(w, "\n")
 
 	fmt.Fprintf(w, "Examples:\n")
-	fmt.Fprintf(w, "  "+app+" -config glider.conf\n")
-	fmt.Fprintf(w, "    -run glider with specified config file.\n")
+	fmt.Fprintf(w, "  "+app+" -config slider.conf\n")
+	fmt.Fprintf(w, "    -run slider with specified config file.\n")
 	fmt.Fprintf(w, "\n")
 	fmt.Fprintf(w, "  "+app+" -listen :8443 -verbose\n")
 	fmt.Fprintf(w, "    -listen on :8443, serve as http/socks5 proxy on the same port, in verbose mode.\n")

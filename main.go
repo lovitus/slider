@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"os"
 	"os/signal"
@@ -9,20 +10,24 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/nadoo/glider/dns"
-	"github.com/nadoo/glider/ipset"
-	"github.com/nadoo/glider/log"
-	"github.com/nadoo/glider/proxy"
-	"github.com/nadoo/glider/rule"
-	"github.com/nadoo/glider/service"
+	"github.com/lovitus/slider/dns"
+	"github.com/lovitus/slider/ipset"
+	"github.com/lovitus/slider/log"
+	"github.com/lovitus/slider/proxy"
+	"github.com/lovitus/slider/rule"
+	"github.com/lovitus/slider/service"
 )
 
-var (
-	version = "0.13.0"
-	config  = parseConfig()
-)
+var version = "dev"
 
 func main() {
+	if len(os.Args) == 2 && (os.Args[1] == "--version" || os.Args[1] == "-version") {
+		fmt.Printf("slider %s\n", version)
+		return
+	}
+
+	config := parseConfig()
+
 	// global rule proxy
 	pxy := rule.NewProxy(config.Forwards, &config.Strategy, config.rules)
 

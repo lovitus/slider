@@ -1,5 +1,5 @@
 
-# Specify destinations in rule file without forwarders, so glider will bypass
+# Specify destinations in rule file without forwarders, so slider will bypass
 # all forwarders and direct connect them instead
 
 ip=127.0.0.1

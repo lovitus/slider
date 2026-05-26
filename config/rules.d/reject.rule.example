@@ -1,7 +1,7 @@
 
 forward=reject://
 
-ipset=glider
+ipset=slider
 
 domain=pornhub.com
 domain=amazon.com

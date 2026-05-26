@@ -54,7 +54,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm/v7,linux/arm64
           push: true
-          tags: 'nadoo/glider:dev,ghcr.io/nadoo/glider:dev'
+          tags: 'lovitus/slider:dev,ghcr.io/lovitus/slider:dev'
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache
 
@@ -66,10 +66,10 @@ jobs:
           script: |
             const ref = `${context.payload.ref.replace(/\/?refs\/tags\//, '')}`
             const tags = [
-              'nadoo/glider:latest',
-              `nadoo/glider:${ref}`,
-              'ghcr.io/nadoo/glider:latest',
-              `ghcr.io/nadoo/glider:${ref}`
+              'lovitus/slider:latest',
+              `lovitus/slider:${ref}`,
+              'ghcr.io/lovitus/slider:latest',
+              `ghcr.io/lovitus/slider:${ref}`
             ]
             return tags.join(',')
           result-encoding: string
